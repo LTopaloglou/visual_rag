@@ -24,6 +24,7 @@ class VisualRAGPipeline:
 
         retrieved_files = self.retriever.retrieve(queries)
         inference_images = []
+        print(f"Retrieved images: {retrieved_files}")
         for filepath in retrieved_files:
             full_res_image = self.utils.load_image(filepath)
             downsampled_image = self.utils.resize(full_res_image)
