@@ -67,5 +67,4 @@ class Retriever:
             limit=top_k,
             timeout=100,
         )
-        payloads = [point for point in search_result[1]]
-        return payloads
+        return search_result.points
