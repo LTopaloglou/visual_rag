@@ -7,9 +7,9 @@ from colpali_engine.models import ColQwen2, ColQwen2Processor
 
 class Retriever:
 
-    def __init__(self):
+    def __init__(self, device: str):
         self.db = QdrantClient(":memory:")
-        self.device = "cpu" #could do mps for my m1 vector chip, but not enough memory
+        self.device = device
         self.model_name = "vidore/colqwen2-v1.0-merged"
         self.processor = ColQwen2Processor.from_pretrained(self.model_name)
         self.embedding_model = ColQwen2.from_pretrained(
@@ -30,7 +30,6 @@ class Retriever:
 
     def encode(self, images: List[Image.Image]):
         #Encodes images into DB
-        #TODO: doing 1 batch atm, but might be faster to do sequential since ton of memory pressure, or smaller batches
         model_input = self.processor.process_images(images).to(self.device)
         embeddings = self.embedding_model(**model_input)
         points = []
