@@ -67,4 +67,5 @@ class Retriever:
             limit=top_k,
             timeout=100,
         )
-        return search_result.points
+        retrieved_files = [point.payload["filepath"] for point in search_result.points]
+        return retrieved_files

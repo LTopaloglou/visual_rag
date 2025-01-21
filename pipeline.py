@@ -21,9 +21,14 @@ class VisualRAGPipeline:
             downsampled_image = self.utils.resize(full_res_image)
             images.append(downsampled_image)
         self.retriever.encode(images, filepaths)
-        retrieved_images = self.retriever.retrieve(queries)
-        for image in retrieved_images:
-            print(image)
-            print(image.payload["filepath"])
+
+        retrieved_files = self.retriever.retrieve(queries)
+        for filepath in retrieved_files:
+            print(filepath)
         
-        return None
+        answers = self.vqa.predict(retrieved_files, queries)
+        
+        for answer in answers:
+            print(answer)
+
+        return answers
