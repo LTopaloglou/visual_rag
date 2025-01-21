@@ -8,7 +8,7 @@ class VisualQA:
     def __init__(self, device: str, max_tokens: int = 128):
         self.device = device
         self.max_tokens = max_tokens
-        self.model_name = "Qwen/Qwen2-VL-7B-Instruct"
+        self.model_name = "Qwen/Qwen2-VL-2B"
         self.model = Qwen2VLForConditionalGeneration.from_pretrained(
             self.model_name, 
             torch_dtype="auto", 
