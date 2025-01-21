@@ -11,6 +11,7 @@ class Retriever:
     def __init__(self, device: str, batch_size: int = 4):
         self.db = QdrantClient(":memory:")
         self.device = device
+        self.batch_size = batch_size
         self.model_name = "vidore/colqwen2-v1.0-merged"
         self.processor = ColQwen2Processor.from_pretrained(self.model_name)
         self.embedding_model = ColQwen2.from_pretrained(
@@ -31,25 +32,28 @@ class Retriever:
 
     def encode(self, images: List[Image.Image]):
         #Encodes images into DB
-        model_input = self.processor.process_images(images).to(self.device)
-        with torch.no_grad():
-            embeddings = self.embedding_model(**model_input)
-        points = []
-        vectors = embeddings.cpu().float().numpy().tolist()
-        for i, vector in enumerate(vectors):
-            points.append(
-                models.PointStruct(
-                    id=i,
-                    vector=vector,
-                    payload={
-                        "hello": "word" #TODO: put full-res image here
-                    }
+        for index in range(0, len(images), self.batch_size):
+            end_index = min(len(images), index + self.batch_size)
+            image_batch = images[index:end_index]
+            model_input = self.processor.process_images(image_batch).to(self.device)
+            with torch.no_grad():
+                embeddings = self.embedding_model(**model_input)
+            points = []
+            vectors = embeddings.cpu().float().numpy().tolist()
+            for i, vector in enumerate(vectors):
+                points.append(
+                    models.PointStruct(
+                        id=i,
+                        vector=vector,
+                        payload={
+                            "hello": "word" #TODO: put full-res image here
+                        }
+                    )
                 )
+            self.db.upsert(
+                collection_name="images",
+                points=points
             )
-        self.db.upsert(
-            collection_name="images",
-            points=points
-        )
 
     def retrieve(self, queries: List[str], top_k: int = 3) -> List[Image.Image]:
         #Retrieves from DB based on queries
