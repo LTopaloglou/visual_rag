@@ -21,6 +21,6 @@ class VisualRAGPipeline:
         self.retriever.encode(images)
         retrieved_images = self.retriever.retrieve(queries)
         for image in retrieved_images:
-            image.show()
+            print(image)
         
         return None

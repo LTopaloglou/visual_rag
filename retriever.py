@@ -8,7 +8,7 @@ from colpali_engine.models import ColQwen2, ColQwen2Processor
 
 class Retriever:
 
-    def __init__(self, device: str):
+    def __init__(self, device: str, batch_size: int = 4):
         self.db = QdrantClient(":memory:")
         self.device = device
         self.model_name = "vidore/colqwen2-v1.0-merged"
