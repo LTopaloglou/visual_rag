@@ -32,7 +32,8 @@ class Retriever:
     def encode(self, images: List[Image.Image]):
         #Encodes images into DB
         model_input = self.processor.process_images(images).to(self.device)
-        embeddings = self.embedding_model(**model_input)
+        with torch.no_grad():
+            embeddings = self.embedding_model(**model_input)
         points = []
         vectors = embeddings.cpu().float().numpy().tolist()
         for i, vector in enumerate(vectors):
@@ -53,7 +54,8 @@ class Retriever:
     def retrieve(self, queries: List[str], top_k: int = 3) -> List[Image.Image]:
         #Retrieves from DB based on queries
         model_input = self.processor.process_queries(queries).to(self.device)
-        embeddings = self.embedding_model(**model_input)
+        with torch.no_grad():
+            embeddings = self.embedding_model(**model_input)
         vectors = embeddings[0].cpu().float().numpy().tolist() #embeddings or embeddings[0]???
         search_result = self.db.query_points(
             collection_name="images",
