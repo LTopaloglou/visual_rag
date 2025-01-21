@@ -11,7 +11,7 @@ class VisualQA:
         self.model_name = "Qwen/Qwen2-VL-7B-Instruct"
         self.model = Qwen2VLForConditionalGeneration.from_pretrained(
             self.model_name, 
-            torch_dtype="torch.bfloat16", 
+            torch_dtype="auto", 
             device_map=self.device
         )
         self.processor = AutoProcessor.from_pretrained(self.model_name)
