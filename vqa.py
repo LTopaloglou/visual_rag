@@ -2,13 +2,14 @@ from transformers import Qwen2VLForConditionalGeneration, AutoTokenizer, AutoPro
 from qwen_vl_utils import process_vision_info
 import torch
 from typing import List
+from PIL import Image
 
 class VisualQA:
 
     def __init__(self, device: str, max_tokens: int = 128):
         self.device = device
         self.max_tokens = max_tokens
-        self.model_name = "Qwen/Qwen2-VL-2B"
+        self.model_name = "Qwen/Qwen2-VL-2B-Instruct"
         self.model = Qwen2VLForConditionalGeneration.from_pretrained(
             self.model_name, 
             torch_dtype="auto", 
@@ -16,8 +17,8 @@ class VisualQA:
         )
         self.processor = AutoProcessor.from_pretrained(self.model_name)
 
-    def predict(self, image_paths: List[str], queries: List[str]) -> str:
-        image_messages = [{"type": "image", "image": path} for path in image_paths]
+    def predict(self, images: List[Image.Image], queries: List[str]) -> str:
+        image_messages = [{"type": "image", "image": image} for image in images]
         query_messages = [{"type": "text", "text": query} for query in queries]
         messages = [{
             "role": "user",
@@ -28,7 +29,7 @@ class VisualQA:
         )
         image_inputs, video_inputs = process_vision_info(messages)
         inputs = self.processor(
-            text=[text],
+            text=text,
             images=image_inputs,
             videos=video_inputs,
             padding=True,
