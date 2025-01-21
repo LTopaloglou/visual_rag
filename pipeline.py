@@ -24,5 +24,6 @@ class VisualRAGPipeline:
         retrieved_images = self.retriever.retrieve(queries)
         for image in retrieved_images:
             print(image)
+            print(image.payload["filepath"])
         
         return None
