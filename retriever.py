@@ -1,4 +1,5 @@
 import torch
+import numpy
 from typing import List
 from PIL import Image
 from qdrant_client import QdrantClient
@@ -33,12 +34,12 @@ class Retriever:
         model_input = self.processor.process_images(images).to(self.device)
         embeddings = self.embedding_model(**model_input)
         points = []
-        #TODO: need this? multivector = embedding.cpu().float().numpy().tolist()
-        for i, embedding in enumerate(embeddings):
+        vectors = embeddings.cpu().float().numpy().tolist()
+        for i, vector in enumerate(vectors):
             points.append(
                 models.PointStruct(
                     id=i,
-                    vector=embedding,
+                    vector=vector,
                     payload={
                         "hello": "word" #TODO: put full-res image here
                     }
@@ -53,10 +54,10 @@ class Retriever:
         #Retrieves from DB based on queries
         model_input = self.processor.process_queries(queries).to(self.device)
         embeddings = self.embedding_model(**model_input)
-        #TODO: need this? multivector_query = embedding[0].cpu().float().numpy().tolist()
+        vectors = embeddings[0].cpu().float().numpy().tolist() #embeddings or embeddings[0]???
         search_result = self.db.query_points(
             collection_name="images",
-            query=embeddings,
+            query=vectors,
             limit=top_k,
             timeout=100,
         )
