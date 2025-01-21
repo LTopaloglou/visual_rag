@@ -13,13 +13,14 @@ class VisualRAGPipeline:
 
     def predict(self, image_directory: str, queries: List[str]) -> List[str]:
         images = []
+        filepaths = []
         for path in os.listdir(image_directory):
             full_path = os.path.join(image_directory, path)
+            filepaths.append(full_path)
             full_res_image = self.utils.load_image(full_path)
             downsampled_image = self.utils.resize(full_res_image)
-            image_path_tuple = (downsampled_image, full_path)
-            images.append(image_path_tuple)
-        self.retriever.encode(images)
+            images.append(downsampled_image)
+        self.retriever.encode(images, filepaths)
         retrieved_images = self.retriever.retrieve(queries)
         for image in retrieved_images:
             print(image)

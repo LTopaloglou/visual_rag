@@ -1,6 +1,5 @@
 import torch
-import numpy
-from typing import List, Tuple
+from typing import List
 from PIL import Image
 from qdrant_client import QdrantClient
 from qdrant_client.http import models
@@ -30,7 +29,7 @@ class Retriever:
             )
         )
 
-    def encode(self, images: List[Tuple[Image.Image, str]]):
+    def encode(self, images: List[Image.Image], filepaths: List[str]):
         #Encodes images into DB
         for index in range(0, len(images), self.batch_size):
             end_index = min(len(images), index + self.batch_size)
@@ -46,7 +45,7 @@ class Retriever:
                         id=i,
                         vector=vector,
                         payload={
-                            "hello": "word" #TODO: put full-res image here
+                            "filepath": filepaths[index + i]
                         }
                     )
                 )
