@@ -1,6 +1,6 @@
 import torch
 import numpy
-from typing import List
+from typing import List, Tuple
 from PIL import Image
 from qdrant_client import QdrantClient
 from qdrant_client.http import models
@@ -30,7 +30,7 @@ class Retriever:
             )
         )
 
-    def encode(self, images: List[Image.Image]):
+    def encode(self, images: List[Tuple[Image.Image, str]]):
         #Encodes images into DB
         for index in range(0, len(images), self.batch_size):
             end_index = min(len(images), index + self.batch_size)
@@ -67,5 +67,5 @@ class Retriever:
             limit=top_k,
             timeout=100,
         )
-        #TODO: get just image payload from search result
-        return search_result
+        payloads = [point.payload for point in search_result[1]]
+        return payloads

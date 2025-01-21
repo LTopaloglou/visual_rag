@@ -17,7 +17,8 @@ class VisualRAGPipeline:
             full_path = os.path.join(image_directory, path)
             full_res_image = self.utils.load_image(full_path)
             downsampled_image = self.utils.resize(full_res_image)
-            images.append(downsampled_image)
+            image_path_tuple = (downsampled_image, full_path)
+            images.append(image_path_tuple)
         self.retriever.encode(images)
         retrieved_images = self.retriever.retrieve(queries)
         for image in retrieved_images:
