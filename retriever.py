@@ -1,4 +1,5 @@
 import torch
+import numpy
 from typing import List
 from PIL import Image
 from qdrant_client import QdrantClient
