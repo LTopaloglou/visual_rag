@@ -34,10 +34,10 @@ class Retriever:
         embeddings = self.embedding_model(**model_input)
         points = []
         #TODO: need this? multivector = embedding.cpu().float().numpy().tolist()
-        for embedding in embeddings:
+        for i, embedding in enumerate(embeddings):
             points.append(
                 models.PointStruct(
-                    #dont think I need an ID
+                    id=i,
                     vector=embedding,
                     payload={
                         "hello": "word" #TODO: put full-res image here
