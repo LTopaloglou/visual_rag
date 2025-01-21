@@ -19,14 +19,15 @@ class VisualQA:
     def predict(self, image_paths: List[str], queries: List[str]) -> str:
         image_messages = [{"type": "image", "image": path} for path in image_paths]
         query_messages = [{"type:": "text", "text": query} for query in queries]
-        message = {
+        messages = [{
             "role": "user",
             "content": image_messages + query_messages,
-        }
+        }]
         text = self.processor.apply_chat_template(
-            message, tokenize=False, add_generation_prompt=True
+            messages[0], tokenize=False, add_generation_prompt=True
         )
-        image_inputs, video_inputs = process_vision_info([message])
+        print(messages)
+        image_inputs, video_inputs = process_vision_info(messages) #This should be list of dict or list of list of dict
         inputs = self.processor(
             text=[text],
             images=image_inputs,
